@@ -1,0 +1,42 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure("2") do |config|
+  # Building on ubuntu trusty box
+  config.vm.box = "ubuntu/trusty64"
+
+
+  # Configuring the machine with at least 1 GB of memory
+  config.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id,'--memory', '2048']
+      vb.customize ["modifyvm", :id, "--cpus"  , "2"  ]
+  end
+
+
+
+  config.vm.define "sensu_machine", autostart: true  do |server|
+    server.vm.hostname = "sensu.machine"
+    server.vm.box = "ubuntu/trusty64"
+    server.vm.network :private_network, ip: "192.168.66.100"
+    server.hostsupdater.aliases = ["sensu.machine"]
+  end
+
+
+  # Configure shared folders between guest and host machine
+  # config.vm.synced_folder "app_root", "/var/www/deploys/com_staging/"
+
+
+  config.vm.provision :salt do |salt|
+    salt.verbose = true
+    ######salt.bootstrap_options = '-F -c /tmp/ -P'
+    #salt.bootstrap_options = "-P"
+    salt.log_level = "warn"
+    salt.colorize = true
+    salt.minion_config = "etc/minion"
+    salt.run_highstate = true
+
+  end
+
+
+
+
+
+end

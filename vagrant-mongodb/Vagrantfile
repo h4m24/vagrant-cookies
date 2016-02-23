@@ -1,0 +1,46 @@
+# start    
+  Vagrant.configure("2") do |config|
+    ## Choose your base box
+    config.vm.box = "ubuntu/trusty64"
+
+
+
+  config.vm.define "mongodb1", autostart: false  do |server|
+    server.vm.box = "ubuntu/trusty64"
+    config.vm.network "private_network", ip: "192.168.100.11", bridge: "en0: Wi-Fi (AirPort)"
+  end
+
+
+   config.vm.define "mongodb2", autostart: false  do |server|
+    server.vm.box = "ubuntu/trusty64"
+    config.vm.network "private_network", ip: "192.168.100.22", bridge: "en0: Wi-Fi (AirPort)"
+  end
+
+
+   config.vm.define "mongodb3", autostart: false  do |server|
+    server.vm.box = "ubuntu/trusty64"
+    config.vm.network "private_network", ip: "192.168.100.33", bridge: "en0: Wi-Fi (AirPort)"
+  end
+
+
+
+
+    ## For masterless, mount your salt file root
+    config.vm.synced_folder "salt/roots/", "/srv/salt/"
+
+
+#=begin
+
+    ## Use all the defaults:
+    config.vm.provision :salt do |salt|
+      salt.run_highstate = true
+      salt.bootstrap_options = "-P -U -p python-gnupg"
+      salt.log_level = "warning"
+      salt.colorize = true
+      salt.minion_config = "salt/roots/etc/minion"
+      salt.run_highstate = true
+    end
+#=end
+
+
+  end

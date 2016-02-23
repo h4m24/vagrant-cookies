@@ -1,0 +1,29 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure("2") do |config|
+
+  # Configuring the machine with at least 1 GB of memory
+  config.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id,'--memory', '512']
+      vb.customize ["modifyvm", :id, "--cpus"  , "2"  ]
+  end
+
+
+
+  config.vm.define "proxy_machine", autostart: true  do |server|
+    server.vm.hostname = "proxy.machine"
+    server.vm.box = "ubuntu/trusty64"
+    server.vm.network "public_network",use_dhcp_assigned_default_route: true
+    end
+
+    config.vm.synced_folder "CAS/", "/root/.mitmproxy"
+
+
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+  config.vm.provision "shell" do |script|
+    script.path = "./provision.sh"
+    end
+
+
+
+end
