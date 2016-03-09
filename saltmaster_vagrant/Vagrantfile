@@ -1,5 +1,6 @@
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure("2") do |config|
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
   # Configuring the machine with at least 1 GB of memory
   config.vm.provider :virtualbox do |vb|
@@ -13,20 +14,31 @@ Vagrant.configure("2") do |config|
     server.vm.hostname = "saltmaster.machine"
     server.vm.box = "ubuntu/trusty64"
     server.vm.network :private_network, ip: "192.168.66.66"
+
+    # sync saltmaster configs
+    config.vm.synced_folder "saltmaster_etc/", "/etc/salt/"
+    # synx salt master states
+    config.vm.synced_folder "srv-salt/", "/srv/salt/"
+    config.vm.provision "shell" do |script|
+      script.path = "./master_provisioner.sh"
+      end
     end
 
 
 
-# sync saltmaster configs
-config.vm.synced_folder "etc-salt/", "/etc/salt/"
-# synx salt master states
-config.vm.synced_folder "srv-salt/", "/srv/salt/"
+    config.vm.define "saltminion", autostart: true  do |server|
+      server.vm.hostname = "saltminion.machine"
+      server.vm.box = "ubuntu/trusty64"
+      server.vm.network :private_network, ip: "192.168.66.67"
 
-  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+      # sync saltmaster configs
+      config.vm.synced_folder "saltminion_etc/", "/etc/salt/"
+      # synx salt master states
 
-  config.vm.provision "shell" do |script|
-    script.path = "./provision.sh"
-    end
+      config.vm.provision "shell" do |script|
+        script.path = "./minion_provisioner.sh"
+        end
+      end
 
 
 
