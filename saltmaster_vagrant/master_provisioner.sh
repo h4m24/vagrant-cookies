@@ -2,4 +2,4 @@ wget -O - https://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest/SALTSTACK-GPG
 echo 'deb http://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest trusty main' >> /etc/apt/sources.list
 apt-get update -qq
 
-apt-get install salt-master  -qq -y
+apt-get -o Dpkg::Options::="--force-confold" install salt-master  -qq -y
