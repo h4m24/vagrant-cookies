@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
     # sync saltmaster configs
     config.vm.synced_folder "saltmaster_etc/", "/etc/salt/"
     # synx salt master states
-    config.vm.synced_folder "srv-salt/", "/srv/salt/"
+    config.vm.synced_folder "srv-salt/", "/srv/"
     config.vm.provision "shell" do |script|
       script.path = "./master_provisioner.sh"
       end

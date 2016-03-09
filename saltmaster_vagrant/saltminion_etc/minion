@@ -667,3 +667,9 @@ grains:
 master: salt.zipjet.live
 grains:
   roles:
+master: salt.zipjet.live
+grains:
+  roles:
+master: salt.zipjet.live
+grains:
+  roles:

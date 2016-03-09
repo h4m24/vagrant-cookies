@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -eu
 
 ROLES="blank_role"
 
