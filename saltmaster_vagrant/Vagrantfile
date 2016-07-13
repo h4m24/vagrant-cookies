@@ -1,13 +1,9 @@
 VAGRANTFILE_API_VERSION = "2"
+
 Vagrant.configure("2") do |config|
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
-  # Configuring the machine with at least 1 GB of memory
-  # config.vm.provider :virtualbox do |vb|
-  #     vb.customize ['modifyvm', :id,'--memory', '2048']
-  #     vb.customize ["modifyvm", :id, "--cpus"  , "4"  ]
-  # end
-
+  # All vms Settings, More juice, Better VMS
   config.vm.provider :virtualbox do |vb|
     vb.customize ['modifyvm', :id,'--memory', '2048'] # memory to vm
     vb.customize ["modifyvm", :id, "--cpus", 4] # number of cpu cores
@@ -17,39 +13,38 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # Using the host's resolver as a DNS proxy in NAT mode
     end
 
+
+  # Salt Master VM
   config.vm.define "saltmaster", autostart: true  do |server|
     server.vm.hostname = "saltmaster.machine"
     server.vm.box = "ubuntu/trusty64"
     server.vm.network :private_network, ip: "192.168.66.66"
 
-
     # synx salt master states
-    config.vm.synced_folder "srv-salt/", "/srv/"
-
-    # sync saltmaster configs
-    config.vm.synced_folder "saltmaster_etc/", "/etc/salt/"
+    config.vm.synced_folder "salt/", "/srv/salt"
 
 
+    # install and configure salt
     config.vm.provision "shell" do |script|
-      script.path = "./master_provisioner.sh"
+      script.path = "./provisioning/master_provisioner.sh"
       end
+
     end
 
 
 
-    config.vm.define "saltminion", autostart: true  do |server|
-      server.vm.hostname = "saltminion.machine"
-      server.vm.box = "ubuntu/trusty64"
-      server.vm.network :private_network, ip: "192.168.66.67"
+  # Salt Minion VM
+  config.vm.define "saltminion", autostart: true  do |server|
+    server.vm.hostname = "saltminion.machine"
+    server.vm.box = "ubuntu/trusty64"
 
-      # sync saltmaster configs
-      config.vm.synced_folder "saltminion_etc/", "/etc/salt/"
-      # synx salt master states
+    server.vm.network :private_network, ip: "192.168.66.67"
 
-      config.vm.provision "shell" do |script|
-        script.path = "./minion_provisioner.sh"
-        end
+    # provision
+    config.vm.provision "shell" do |script|
+      script.path = "./provisioning/minion_provisioner.sh"
       end
+    end
 
 
 
