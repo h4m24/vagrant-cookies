@@ -3,22 +3,33 @@ Vagrant.configure("2") do |config|
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
   # Configuring the machine with at least 1 GB of memory
+  # config.vm.provider :virtualbox do |vb|
+  #     vb.customize ['modifyvm', :id,'--memory', '2048']
+  #     vb.customize ["modifyvm", :id, "--cpus"  , "4"  ]
+  # end
+
   config.vm.provider :virtualbox do |vb|
-      vb.customize ['modifyvm', :id,'--memory', '2048']
-      vb.customize ["modifyvm", :id, "--cpus"  , "4"  ]
-  end
-
-
+    vb.customize ['modifyvm', :id,'--memory', '2048'] # memory to vm
+    vb.customize ["modifyvm", :id, "--cpus", 4] # number of cpu cores
+    vb.customize ["modifyvm", :id, "--paravirtprovider", 'kvm' ] # can be set to "paravirt"
+    vb.customize ["modifyvm", :id, "--ioapic", "on"] # turn on I/O APIC  end
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"] # Enabling DNS proxy in NAT mode
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # Using the host's resolver as a DNS proxy in NAT mode
+    end
 
   config.vm.define "saltmaster", autostart: true  do |server|
     server.vm.hostname = "saltmaster.machine"
     server.vm.box = "ubuntu/trusty64"
     server.vm.network :private_network, ip: "192.168.66.66"
 
-    # sync saltmaster configs
-    config.vm.synced_folder "saltmaster_etc/", "/etc/salt/"
+
     # synx salt master states
     config.vm.synced_folder "srv-salt/", "/srv/"
+
+    # sync saltmaster configs
+    config.vm.synced_folder "saltmaster_etc/", "/etc/salt/"
+
+
     config.vm.provision "shell" do |script|
       script.path = "./master_provisioner.sh"
       end
