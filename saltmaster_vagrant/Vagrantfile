@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"] # Enabling DNS proxy in NAT mode
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # Using the host's resolver as a DNS proxy in NAT mode
     end
-
+#####################  Defined Machines   #####################
 
   # Salt Master VM
   config.vm.define "saltmaster", autostart: true  do |server|
@@ -21,11 +21,11 @@ Vagrant.configure("2") do |config|
     server.vm.network :private_network, ip: "192.168.66.66"
 
     # synx salt master states
-    config.vm.synced_folder "salt/", "/srv/salt"
+    server.vm.synced_folder "salt/", "/srv/salt"
 
 
     # install and configure salt
-    config.vm.provision "shell" do |script|
+    server.vm.provision "shell" do |script|
       script.path = "./provisioning/master_provisioner.sh"
       end
 
@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
     server.vm.network :private_network, ip: "192.168.66.67"
 
     # provision
-    config.vm.provision "shell" do |script|
+    server.vm.provision "shell" do |script|
       script.path = "./provisioning/minion_provisioner.sh"
       end
     end

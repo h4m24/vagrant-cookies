@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu
 
+# remove stdin error related messages
+export DEBIAN_FRONTEND=noninteractive
+
+
 ROLES="blank_role"
 
 ROLES="`echo $ROLES| awk -F":" '{print $2}' | sed 's#,#  #g'`"
